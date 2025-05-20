@@ -4,13 +4,11 @@
 ---
 Detta är ett delsystem som hanterar generering och validering av JWT-tokens. Det är en fristående backend-API som körs live på Render och kan användas av resten av gruppens projekt.
 
-📌 Funktioner
-/api/Auth/token – POST
-
+📌 Funktioner:
+#### /api/Auth/token – POST
 Genererar en JWT-token med userId, valfri email och role.
 
-/api/ValidateToken – POST
-
+#### /api/ValidateToken – POST
 Validerar att en token är giltig och att userId matchar innehållet i token.
 
 🔧 Användning (för frontend eller andra delsystem)
