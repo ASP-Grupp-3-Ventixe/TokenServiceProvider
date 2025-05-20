@@ -6,7 +6,7 @@ namespace Presentation.Interfaces
 {
     public interface ITokenService
     {
-        Task<TokenResponse> GetTokenAsync(TokenRequest request, int expiresInDays = 30);
-        Task<ValidationResponse> ValidateAccessTokenAsync(ValidationRequest request);
-    }
+        Task<TokenResponse> GenerateTokenAsync(TokenRequest request, int expiresInDays = 30);
+        Task<ValidationResponse> ValidateTokenAsync(ValidationRequest request);
+    }   
 }

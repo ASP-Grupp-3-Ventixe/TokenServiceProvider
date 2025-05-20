@@ -9,11 +9,3 @@ public class TokenRequest
     public string? Email { get; set; }
     public string?  Role { get; set; }  
 }
-public class TokenResponse
-{
-    [Required]
-    public string AccessToken { get; set; } = string.Empty;
-    public bool Succeeded { get; set; }
-    public string? Message { get; set; }    
-
-}

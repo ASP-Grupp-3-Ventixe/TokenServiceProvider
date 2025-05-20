@@ -11,96 +11,102 @@ public class TokenService : ITokenService
     private readonly string _issuer;
     private readonly string _audience;
     private readonly string _secretKey;
+    private readonly JwtSecurityTokenHandler _tokenHandler;
 
     public TokenService()
     {
-        _issuer = Environment.GetEnvironmentVariable("Issuer") ?? throw new NullReferenceException("No issuer provided.");
-        _audience = Environment.GetEnvironmentVariable("Audience") ?? throw new NullReferenceException("No audience provided.");
-        _secretKey = Environment.GetEnvironmentVariable("SecretKey") ?? throw new NullReferenceException("No secret key provided.");
-
+        _issuer = GetEnv("Issuer");
+        _audience = GetEnv("Audience");
+        _secretKey = GetEnv("SecretKey");
+        _tokenHandler = new JwtSecurityTokenHandler();
     }
 
-    public async Task<TokenResponse> GetTokenAsync(TokenRequest request, int expiresInDays = 30)
+    public async Task<TokenResponse> GenerateTokenAsync(TokenRequest request, int expiresInDays = 30)
     {
 
         try
         {
-            if (string.IsNullOrEmpty(request.UserId))
-                throw new NullReferenceException("No UserId provided.");
+            if (string.IsNullOrWhiteSpace(request.UserId))
+                return TokenResponse.Fail("UserId is required");
 
-            var issuer = Environment.GetEnvironmentVariable("Issuer") ?? throw new NullReferenceException("No issuer provided.");
-            var audience = Environment.GetEnvironmentVariable("Audience") ?? throw new NullReferenceException("No audience provided.");
-            var secretKey = Environment.GetEnvironmentVariable("SecretKey") ?? throw new NullReferenceException("No secret key provided.");
-            var credentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)), SecurityAlgorithms.HmacSha256) ?? throw new NullReferenceException("Unable to create credentials.");
+            var claims = BuildClaims(request);
+            var credentials = GetSigningCredentials();
 
-            //using var http = new HttpClient();
-            //var response = await http.PostAsJsonAsync("", request);
-            //if (!response.IsSuccessStatusCode)
-            //    throw new Exception("UserId is invalid");
-
-            List<Claim> claims = [new Claim(ClaimTypes.NameIdentifier, request.UserId)];
-
-            if (!string.IsNullOrEmpty(request.Email))
-                claims.Add(new Claim(ClaimTypes.Email, request.Email));
-            if (!string.IsNullOrEmpty(request.Role))
-                claims.Add(new Claim(ClaimTypes.Role, request.Role));
-
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var descriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Issuer = issuer,
-                Audience = audience,
+                Issuer = _issuer,
+                Audience = _audience,
                 SigningCredentials = credentials,
                 Expires = DateTime.UtcNow.AddDays(expiresInDays)
             };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var token = _tokenHandler.CreateToken(descriptor);
 
-            return new TokenResponse
-            {
-                Succeeded = true,
-                AccessToken = tokenHandler.WriteToken(token),
-                Message = "Token is valid"
-            };
+
+            return TokenResponse.Success(_tokenHandler.WriteToken(token));
+
         }
         catch (Exception ex)
         {
-            return new TokenResponse { Succeeded = false, Message = ex.Message };
+            return TokenResponse.Fail($"GenerateTokenAsync failed... {ex}");
         }
     }
 
-    public async Task<ValidationResponse> ValidateAccessTokenAsync(ValidationRequest request)
+    public async Task<ValidationResponse> ValidateTokenAsync(ValidationRequest request)
     {
-
-        var tokenHandler = new JwtSecurityTokenHandler();
 
         try
         {
-            var principal = tokenHandler.ValidateToken(request.AccessToken, new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = _issuer,
-                ValidateAudience = true,
-                ValidAudience = _audience,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
-                ClockSkew = TimeSpan.Zero,
+            var parameters = GetValidationParameters();
+            var principal = _tokenHandler.ValidateToken(request.AccessToken, parameters, out _);
 
-            }, out SecurityToken validatedToken);
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId) || userId != request.UserId)
+                return ValidationResponse.Fail("UserId does not match token.");
 
-            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new NullReferenceException("UserId in claims is null");
-
-            //using var http = new HttpClient();
-            //var response = await http.GetAsync($"https://....../api/users/exists/{userId}");
-            //if (!response.IsSuccessStatusCode)
-            //    throw new NullReferenceException("User not found");
-
-            return new ValidationResponse { Succeeded = true, Message = "Token is valid" };
+            return ValidationResponse.Success("Access granted");
         }
         catch (Exception ex)
         {
-            return new ValidationResponse { Succeeded = false, Message = ex.Message };
+            return ValidationResponse.Fail($"ValidateTokenAsync failed... {ex}");
         }
     }
+
+    #region Helpers
+    private static string GetEnv(string key) =>
+        Environment.GetEnvironmentVariable(key) ?? throw new ArgumentNullException(key, $"Environment variable '{key}' is missing.");
+
+    private SigningCredentials GetSigningCredentials() =>
+        new(
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
+            SecurityAlgorithms.HmacSha256);
+
+    private static List<Claim> BuildClaims(TokenRequest request)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, request.UserId)
+        };
+
+        if (!string.IsNullOrEmpty(request.Email))
+            claims.Add(new Claim(ClaimTypes.Email, request.Email));
+        if (!string.IsNullOrEmpty(request.Role))
+            claims.Add(new Claim(ClaimTypes.Role, request.Role));
+
+        return claims;
+    }
+
+    private TokenValidationParameters GetValidationParameters() =>
+        new()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = _issuer,
+            ValidateAudience = true,
+            ValidAudience = _audience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
+            ClockSkew = TimeSpan.Zero,
+        };
+    #endregion
 }

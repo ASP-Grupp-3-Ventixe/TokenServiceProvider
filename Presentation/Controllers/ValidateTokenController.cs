@@ -12,12 +12,12 @@ public class ValidateTokenController(ITokenService tokenService) : ControllerBas
     private readonly ITokenService _tokenService = tokenService;
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] ValidationRequest request)
+    public async Task<IActionResult> Validate([FromBody] ValidationRequest request)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new ValidationResponse { Succeeded = false, Message = "Invalid token request." });
+            return BadRequest("Invalid validation request");
 
-        var result = await _tokenService.ValidateAccessTokenAsync(request);
+        var result = await _tokenService.ValidateTokenAsync(request);
 
         if (!result.Succeeded)
             return Unauthorized("Invalid access token.");
