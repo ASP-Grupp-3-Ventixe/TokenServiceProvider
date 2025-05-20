@@ -1,0 +1,11 @@
+# Ignore Visual Studio and build output
+.vs/
+*.user
+*.suo
+*.vscode/
+
+bin/
+obj/
+
+# Ignore secrets and local settings
+appsettings*.json

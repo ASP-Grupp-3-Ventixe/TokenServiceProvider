@@ -1,0 +1,29 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5209",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Issuer": "https://localhost:7176",
+        "Audience": "Ventixe",
+        "SecretKey": "5d0493bd-dfbd-4fc4-822c-74095ce53d56"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7176;http://localhost:5209",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Issuer": "https://localhost:7176",
+        "Audience": "Ventixe",
+        "SecretKey": "5d0493bd-dfbd-4fc4-822c-74095ce53d56"
+      }
+    }
+  }
+}
