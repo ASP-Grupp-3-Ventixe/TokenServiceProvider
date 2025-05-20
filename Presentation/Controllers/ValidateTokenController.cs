@@ -20,7 +20,7 @@ public class ValidateTokenController(ITokenService tokenService) : ControllerBas
         var result = await _tokenService.ValidateTokenAsync(request);
 
         if (!result.Succeeded)
-            return Unauthorized("Invalid access token.");
+            return Unauthorized(result);
 
         return Ok(result);
     }
