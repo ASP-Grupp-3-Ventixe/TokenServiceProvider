@@ -20,13 +20,7 @@ Validerar att en token är:
 
 ## 🔧 Användning (för frontend eller andra API:er)
 
-1. **Generera token**  
-   POST till:  
-   [`https://tokenserviceprovider.onrender.com/api/Auth/token`](https://tokenserviceprovider.onrender.com/api/Auth/token)
-
-2. **Validera token**  
-   POST till:  
-   [`https://tokenserviceprovider.onrender.com/api/ValidateToken`](https://tokenserviceprovider.onrender.com/api/ValidateToken)
+*https://tokenserviceprovider.onrender.com*
 
 ---
 
