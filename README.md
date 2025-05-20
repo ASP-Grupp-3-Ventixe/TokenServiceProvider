@@ -1,6 +1,7 @@
 
 
-🛡️ TokenServiceProvider
+## 🛡️ TokenServiceProvider
+---
 Detta är ett delsystem som hanterar generering och validering av JWT-tokens. Det är en fristående backend-API som körs live på Render och kan användas av resten av gruppens projekt.
 
 📌 Funktioner
@@ -17,7 +18,7 @@ Validerar att en token är giltig och att userId matchar innehållet i token.
 Endpoint:
 POST https://tokenserviceprovider.onrender.com/api/Auth/token
 
-
+---
 Sekvensdiagram – Tokenvalidering
 ![image](https://github.com/user-attachments/assets/f708bc24-a912-475b-8d6e-f54ee5cf09e0)
 
