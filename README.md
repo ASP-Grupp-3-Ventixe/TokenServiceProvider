@@ -1,22 +1,36 @@
+# 🛡️ TokenServiceProvider
 
+Detta är ett delsystem som ansvarar för att generera och validera JWT-tokens. Det är ett fristående backend-API som är publicerat live via Render, och kan användas av resten av gruppens projekt.
 
-## 🛡️ TokenServiceProvider
+## 📌 Funktioner
+
+### `POST /api/Auth/token`
+Skapar en JWT-token baserat på:
+- `userId` (obligatorisk)
+- `email` (valfri)
+- `role` (valfri)
+
+### `POST /api/ValidateToken`
+Validerar att en token är:
+- giltig
+- signerad korrekt
+- innehåller samma `userId` som skickats in
+
 ---
-Detta är ett delsystem som hanterar generering och validering av JWT-tokens. Det är en fristående backend-API som körs live på Render och kan användas av resten av gruppens projekt.
 
-📌 Funktioner:
-#### /api/Auth/token – POST
-Genererar en JWT-token med userId, valfri email och role.
+## 🔧 Användning (för frontend eller andra API:er)
 
-#### /api/ValidateToken – POST
-Validerar att en token är giltig och att userId matchar innehållet i token.
+1. **Generera token**  
+   POST till:  
+   [`https://tokenserviceprovider.onrender.com/api/Auth/token`](https://tokenserviceprovider.onrender.com/api/Auth/token)
 
-🔧 Användning (för frontend eller andra delsystem)
-1. Generera token:
-Endpoint:
-POST https://tokenserviceprovider.onrender.com/api/Auth/token
+2. **Validera token**  
+   POST till:  
+   [`https://tokenserviceprovider.onrender.com/api/ValidateToken`](https://tokenserviceprovider.onrender.com/api/ValidateToken)
 
 ---
+
+## 📊 Diagram
 Sekvensdiagram – Tokenvalidering
 ![image](https://github.com/user-attachments/assets/f708bc24-a912-475b-8d6e-f54ee5cf09e0)
 
