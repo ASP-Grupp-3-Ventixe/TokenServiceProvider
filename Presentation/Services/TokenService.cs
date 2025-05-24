@@ -75,7 +75,7 @@ public class TokenService : ITokenService
 
     #region Helpers
     private static string GetEnv(string key) =>
-        Environment.GetEnvironmentVariable(key) ?? throw new ArgumentNullException(key, $"Environment variable '{key}' is missing.");
+        Environment.GetEnvironmentVariable(key)?.Trim() ?? throw new ArgumentNullException(key, $"Environment variable '{key}' is missing.");
 
     private SigningCredentials GetSigningCredentials() =>
         new(
