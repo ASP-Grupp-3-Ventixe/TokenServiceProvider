@@ -107,6 +107,6 @@ public class TokenService : ITokenService
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
             ClockSkew = TimeSpan.Zero,
-        };
+        }; 
     #endregion
 }
