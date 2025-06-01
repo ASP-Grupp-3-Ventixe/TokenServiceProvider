@@ -1,5 +1,9 @@
 # 🛡️ TokenServiceProvider
 
+## 🧠 AI-användning
+
+Denna README är delvis genererad med hjälp av AI-stöd (ChatGPT) enligt mina instruktioner gällande innehåll och struktur. All information har granskats och godkänts av mig innan den inkluderades i projektet.
+
 Detta är ett delsystem som ansvarar för att generera och validera JWT-tokens. Det är ett fristående backend-API som är publicerat live via Render, och kan användas av resten av gruppens projekt.
 
 ## 📌 Funktioner
