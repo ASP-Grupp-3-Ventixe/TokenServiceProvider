@@ -6,20 +6,14 @@ using System.Security.Claims;
 using System.Text;
 namespace Presentation.Services;
 
-public class TokenService : ITokenService
+public class TokenService(ILogger<TokenService> logger) : ITokenService
 {
-    private readonly string _issuer;
-    private readonly string _audience;
-    private readonly string _secretKey;
-    private readonly JwtSecurityTokenHandler _tokenHandler;
+    private readonly string _issuer = GetEnv("Issuer");
+    private readonly string _audience = GetEnv("Audience");
+    private readonly string _secretKey = GetEnv("SecretKey");
+    private readonly JwtSecurityTokenHandler _tokenHandler = new();
 
-    public TokenService()
-    {
-        _issuer = GetEnv("Issuer");
-        _audience = GetEnv("Audience");
-        _secretKey = GetEnv("SecretKey");
-        _tokenHandler = new JwtSecurityTokenHandler();
-    }
+    private readonly ILogger<TokenService> _logger = logger;
 
     public async Task<TokenResponse> GenerateTokenAsync(TokenRequest request, int expiresInDays = 30)
     {
@@ -49,7 +43,9 @@ public class TokenService : ITokenService
         }
         catch (Exception ex)
         {
-            return TokenResponse.Fail($"GenerateTokenAsync failed... {ex}");
+            _logger.LogError(ex, " GenerateTokenAsync failed. Error occured during token generation.");
+
+            return TokenResponse.Fail($"Failed to generate token.");
         }
     }
 
@@ -69,7 +65,8 @@ public class TokenService : ITokenService
         }
         catch (Exception ex)
         {
-            return ValidationResponse.Fail($"ValidateTokenAsync failed... {ex}");
+            _logger.LogError(ex, " ValidateTokenAsync failed. Error occured during token validation.");
+            return ValidationResponse.Fail($"Invalid token.");
         }
     }
 
