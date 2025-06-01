@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35828.75
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation", "Presentation\Presentation.csproj", "{490CE419-AC5C-4E2C-A214-EC34A95DCBB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokenServiceProvider.Tests", "TokenServiceProvider.Tests\TokenServiceProvider.Tests.csproj", "{ADD2F968-5931-4EEB-896C-A4ED74945644}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{490CE419-AC5C-4E2C-A214-EC34A95DCBB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{490CE419-AC5C-4E2C-A214-EC34A95DCBB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{490CE419-AC5C-4E2C-A214-EC34A95DCBB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADD2F968-5931-4EEB-896C-A4ED74945644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADD2F968-5931-4EEB-896C-A4ED74945644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADD2F968-5931-4EEB-896C-A4ED74945644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADD2F968-5931-4EEB-896C-A4ED74945644}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
