@@ -1,27 +1,34 @@
 ﻿using FluentAssertions;
+using Moq;
+using Microsoft.Extensions.Logging;
 using Presentation.Models;
 using Presentation.Services;
 
 namespace TokenServiceProvider.Tests;
 
-// Jag har bett ChatGpt skriva testkoden i denna klass enligt mina instruktioner och min struktur
-// och sedan klistrat in det.
-
 public class TokenServiceTests
 {
+    private readonly TokenService _sut; // SUT = System Under Test
+    private readonly Mock<ILogger<TokenService>> _loggerMock;
+
     public TokenServiceTests()
     {
+        // Setup environment variables
         Environment.SetEnvironmentVariable("Issuer", "https://localhost:7176");
         Environment.SetEnvironmentVariable("Audience", "Ventixe");
         Environment.SetEnvironmentVariable("SecretKey", "5d0493bd-dfbd-4fc4-822c-74095ce53d56");
+
+        // Mock logger
+        _loggerMock = new Mock<ILogger<TokenService>>();
+
+        // Create instance of the service with mocked logger
+        _sut = new TokenService(_loggerMock.Object);
     }
 
     [Fact]
     public async Task GenerateTokenAsync_ShouldReturnToken_WhenValidRequest()
     {
         // Arrange
-        var tokenService = new TokenService();
-
         var request = new TokenRequest
         {
             UserId = "12345",
@@ -30,7 +37,7 @@ public class TokenServiceTests
         };
 
         // Act
-        var response = await tokenService.GenerateTokenAsync(request);
+        var response = await _sut.GenerateTokenAsync(request);
 
         // Assert
         response.Succeeded.Should().BeTrue();
@@ -42,8 +49,6 @@ public class TokenServiceTests
     public async Task GenerateTokenAsync_ShouldFail_WhenUserIdMissing()
     {
         // Arrange
-        var tokenService = new TokenService();
-
         var request = new TokenRequest
         {
             UserId = "",
@@ -52,7 +57,7 @@ public class TokenServiceTests
         };
 
         // Act
-        var response = await tokenService.GenerateTokenAsync(request);
+        var response = await _sut.GenerateTokenAsync(request);
 
         // Assert
         response.Succeeded.Should().BeFalse();
@@ -63,8 +68,6 @@ public class TokenServiceTests
     public async Task ValidateTokenAsync_ShouldReturnSuccess_WhenTokenValid()
     {
         // Arrange
-        var tokenService = new TokenService();
-
         var request = new TokenRequest
         {
             UserId = "12345",
@@ -72,7 +75,7 @@ public class TokenServiceTests
             Role = "Admin"
         };
 
-        var generateResponse = await tokenService.GenerateTokenAsync(request);
+        var generateResponse = await _sut.GenerateTokenAsync(request);
 
         var validationRequest = new ValidationRequest
         {
@@ -81,7 +84,7 @@ public class TokenServiceTests
         };
 
         // Act
-        var validationResponse = await tokenService.ValidateTokenAsync(validationRequest);
+        var validationResponse = await _sut.ValidateTokenAsync(validationRequest);
 
         // Assert
         validationResponse.Succeeded.Should().BeTrue();
@@ -92,8 +95,6 @@ public class TokenServiceTests
     public async Task ValidateTokenAsync_ShouldFail_WhenUserIdMismatch()
     {
         // Arrange
-        var tokenService = new TokenService();
-
         var request = new TokenRequest
         {
             UserId = "12345",
@@ -101,7 +102,7 @@ public class TokenServiceTests
             Role = "Admin"
         };
 
-        var generateResponse = await tokenService.GenerateTokenAsync(request);
+        var generateResponse = await _sut.GenerateTokenAsync(request);
 
         var validationRequest = new ValidationRequest
         {
@@ -110,7 +111,7 @@ public class TokenServiceTests
         };
 
         // Act
-        var validationResponse = await tokenService.ValidateTokenAsync(validationRequest);
+        var validationResponse = await _sut.ValidateTokenAsync(validationRequest);
 
         // Assert
         validationResponse.Succeeded.Should().BeFalse();
